@@ -20,7 +20,7 @@ export default function LandingPage() {
         <div className="mx-auto max-w-2xl py-8">
           <div className="text-center">
             <Image
-              src="/logo.png"
+              src="/bu.png"
               width="200"
               height="200"
               alt="sycom file drive logo"
@@ -28,11 +28,10 @@ export default function LandingPage() {
             />
 
             <h1 className="text-4xl font-bold tracking-tight text-gray-900 sm:text-6xl">
-              Upload, manage and share all your files with your company.
+              Bugema University Publication Repository
             </h1>
             <p className="mt-6 text-lg leading-8 text-gray-600">
-              Create an account and start managing your files in less than a
-              minute.
+              Create an account and start managing your Publications
             </p>
             <div className="mt-10 flex items-center justify-center">
               <Link
