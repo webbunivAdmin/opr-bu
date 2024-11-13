@@ -1,9 +1,9 @@
 import { defineSchema, defineTable } from "convex/server";
 import { v } from "convex/values";
 
-export const fileTypes = v.union(
+// Define the file types
+export const publicationFileTypes = v.union(
   v.literal("image"),
-  v.literal("csv"),
   v.literal("pdf"),
   v.literal("ppt"),
   v.literal("pptx"),
@@ -12,33 +12,46 @@ export const fileTypes = v.union(
   v.literal("xlsx")
 );
 
-export const roles = v.union(v.literal("admin"), v.literal("member"));
-
+// Define the schema for users, files, publications, comments, and deleted files
 export default defineSchema({
-  files: defineTable({
-    name: v.string(),
-    type: fileTypes,
-    orgId: v.string(),
-    fileId: v.id("_storage"),
-    userId: v.id("users"),
-    shouldDelete: v.optional(v.boolean()),
-  })
-    .index("by_orgId", ["orgId"])
-    .index("by_shouldDelete", ["shouldDelete"]),
-  favorites: defineTable({
-    fileId: v.id("files"),
-    orgId: v.string(),
-    userId: v.id("users"),
-  }).index("by_userId_orgId_fileId", ["userId", "orgId", "fileId"]),
   users: defineTable({
     tokenIdentifier: v.string(),
     name: v.optional(v.string()),
     image: v.optional(v.string()),
-    orgIds: v.array(
-      v.object({
-        orgId: v.string(),
-        role: roles,
-      })
-    ),
   }).index("by_tokenIdentifier", ["tokenIdentifier"]),
+
+  files: defineTable({
+    name: v.string(),
+    type: v.optional(publicationFileTypes),
+    userId: v.id("users"),
+    fileId: v.id("_storage"),
+    version: v.number(),
+    isPublished: v.boolean(),
+    uploadDate: v.string(),
+  }).index("by_userId", ["userId"]),
+
+  publications: defineTable({
+    title: v.string(),
+    description: v.optional(v.string()),
+    publicationDate: v.optional(v.string()),
+    creatorId: v.id("users"),
+    fileIds: v.array(v.id("files")),
+    status: v.optional(v.string()),
+    coverImageId: v.optional(v.id("_storage")),
+    isPublished: v.boolean(),
+  }),
+
+  publicationComments: defineTable({
+    publicationId: v.id("publications"),
+    userId: v.id("users"),
+    commentText: v.string(),
+    timestamp: v.string(),
+  }),
+
+  deletedFiles: defineTable({
+    name: v.string(),
+    userId: v.id("users"),
+    fileId: v.id("_storage"),
+    deletedDate: v.string(),
+  }).index("by_userId", ["userId"]),
 });
